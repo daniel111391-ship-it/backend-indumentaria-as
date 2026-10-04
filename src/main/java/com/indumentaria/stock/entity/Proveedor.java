@@ -1,4 +1,4 @@
-package com.indumentaria.stock;
+package com.indumentaria.stock.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

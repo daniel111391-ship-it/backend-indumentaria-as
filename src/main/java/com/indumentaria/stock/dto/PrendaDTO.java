@@ -1,4 +1,4 @@
-package com.indumentaria.stock;
+package com.indumentaria.stock.dto;
 
 public record PrendaDTO(
         Long id,

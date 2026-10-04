@@ -1,5 +1,9 @@
-package com.indumentaria.stock;
+package com.indumentaria.stock.controller;
 
+import com.indumentaria.stock.dto.PrendaDTO;
+import com.indumentaria.stock.repository.PrendaRepository;
+import com.indumentaria.stock.RecursoNoEncontradoException;
+import com.indumentaria.stock.entity.Prenda;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
