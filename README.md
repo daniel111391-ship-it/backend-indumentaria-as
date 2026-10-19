@@ -1,7 +1,7 @@
 # Sistema de Gestión de Inventario - Indumentaria AS
 **Materia:** Lenguajes de Programación II
 **Profesor:** Francisco Paredes / Axel Ruiz Valdez
-**Alumno:** Roberto Daniel Sanchez
+**Alumno:** Roberto Daniel Sanchez, Mariana Mercado, Denis Flores
 
 ## 1. Descripción del Proyecto
 Este proyecto es el backend de una API REST para gestionar el inventario, los proveedores y los usuarios del negocio "Indumentaria AS".
