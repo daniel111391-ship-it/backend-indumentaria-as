@@ -1,46 +1,50 @@
 package com.indumentaria.stock.controller;
 
-import com.indumentaria.stock.dto.PrendaDTO;
+import com.indumentaria.stock.dto.PrendaRequestDTO;
+import com.indumentaria.stock.dto.PrendaResponseDTO;
 import com.indumentaria.stock.service.PrendaService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/prendas")
+@RequestMapping("/api/prendas") // Rutas REST limpias sin /all o /add
 public class PrendaController {
 
-    @Autowired
-    private PrendaService prendaService;
+    private final PrendaService prendaService;
 
-    // 1. Ver todo el inventario
-    @GetMapping("/all")
-    public List<PrendaDTO> verInventario() {
-        return prendaService.verInventario();
+    // Inyección por constructor
+    public PrendaController(PrendaService prendaService) {
+        this.prendaService = prendaService;
     }
 
-    // 2. Registrar nueva prenda
-    @PostMapping("/add")
-    public String registrarPrenda(@RequestBody PrendaDTO dto) {
-        return prendaService.registrarPrenda(dto);
+    @GetMapping
+    public ResponseEntity<List<PrendaResponseDTO>> verInventario() {
+        return ResponseEntity.ok(prendaService.verInventario()); // 200 OK
     }
 
-    // 3. Buscar por ID
-    @GetMapping("/buscar/{id}")
-    public PrendaDTO buscarPorId(@PathVariable Long id) {
-        return prendaService.buscarPorId(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<PrendaResponseDTO> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(prendaService.buscarPorId(id)); // 200 OK
     }
 
-    // 4. Modificar/Actualizar una prenda existente por su ID
-    @PutMapping("/modificar/{id}")
-    public String actualizarPrenda(@PathVariable Long id, @RequestBody PrendaDTO dto) {
-        return prendaService.actualizarPrenda(id, dto);
+    @PostMapping
+    public ResponseEntity<PrendaResponseDTO> registrarPrenda(@Valid @RequestBody PrendaRequestDTO dto) {
+        PrendaResponseDTO nuevaPrenda = prendaService.registrarPrenda(dto);
+        return new ResponseEntity<>(nuevaPrenda, HttpStatus.CREATED); // 201 Created
     }
 
-    // 5. Eliminar una prenda por su ID
+    @PutMapping("/{id}")
+    public ResponseEntity<PrendaResponseDTO> actualizarPrenda(@PathVariable Long id, @Valid @RequestBody PrendaRequestDTO dto) {
+        return ResponseEntity.ok(prendaService.actualizarPrenda(id, dto)); // 200 OK
+    }
+
     @DeleteMapping("/{id}")
-    public String eliminarPrenda(@PathVariable Long id) {
-        return prendaService.eliminarPrenda(id);
+    public ResponseEntity<Void> eliminarPrenda(@PathVariable Long id) {
+        prendaService.eliminarPrenda(id);
+        return ResponseEntity.noContent().build(); // 204 No Content
     }
 }

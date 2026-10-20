@@ -20,7 +20,6 @@ public class Proveedor {
     private String nombreEmpresa;
     private String telefono;
 
-    // Relación: Un proveedor abastece muchas prendas
-    @OneToMany(mappedBy = "proveedor", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "proveedor")
     private List<Prenda> prendas;
 }

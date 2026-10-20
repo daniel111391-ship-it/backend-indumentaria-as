@@ -1,43 +1,60 @@
 package com.indumentaria.stock.service;
 
-import com.indumentaria.stock.dto.UsuarioDTO;
+import com.indumentaria.stock.RecursoNoEncontradoException;
+import com.indumentaria.stock.dto.UsuarioRequestDTO;
+import com.indumentaria.stock.dto.UsuarioResponseDTO;
 import com.indumentaria.stock.entity.Usuario;
 import com.indumentaria.stock.mapper.UsuarioMapper;
 import com.indumentaria.stock.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UsuarioService {
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final UsuarioMapper usuarioMapper;
 
-    @Autowired
-    private UsuarioMapper usuarioMapper;
-
-    // Lógica para registrar a un empleado o administrador
-    public String crearUsuario(UsuarioDTO dto) {
-        // 1. Usamos el mapper para convertir el DTO que llega a una Entidad
-        Usuario nuevoUsuario = usuarioMapper.dtoToEntity(dto);
-
-        // 2. Guardamos la entidad en la base de datos
-        usuarioRepository.save(nuevoUsuario);
-
-        return "¡Usuario de Indumentaria AS registrado con éxito!";
+    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper) {
+        this.usuarioRepository = usuarioRepository;
+        this.usuarioMapper = usuarioMapper;
     }
 
-    // Lógica para listar a todos los usuarios
-    public List<UsuarioDTO> obtenerTodos() {
-        // 1. Buscamos todas las entidades en la base de datos
-        List<Usuario> usuarios = usuarioRepository.findAll();
-
-        // 2. Usamos el mapper para convertirlas todas a DTOs y enviarlas
-        return usuarios.stream()
+    public List<UsuarioResponseDTO> listarTodos() {
+        return usuarioRepository.findAll().stream()
                 .map(usuarioMapper::entityToDTO)
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    public UsuarioResponseDTO buscarPorId(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No existe el usuario con ID: " + id));
+        return usuarioMapper.entityToDTO(usuario);
+    }
+
+    public UsuarioResponseDTO crearUsuario(UsuarioRequestDTO dto) {
+        Usuario usuario = usuarioMapper.dtoToEntity(dto);
+        Usuario guardado = usuarioRepository.save(usuario);
+        return usuarioMapper.entityToDTO(guardado);
+    }
+
+    public UsuarioResponseDTO actualizarUsuario(Long id, UsuarioRequestDTO dto) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RecursoNoEncontradoException("No existe el usuario con ID: " + id));
+
+        usuario.setNombre(dto.nombre());
+        usuario.setEmail(dto.email());
+        usuario.setRol(dto.rol());
+
+        Usuario actualizado = usuarioRepository.save(usuario);
+        return usuarioMapper.entityToDTO(actualizado);
+    }
+
+    public void eliminarUsuario(Long id) {
+        if (!usuarioRepository.existsById(id)) {
+            throw new RecursoNoEncontradoException("No existe el usuario con ID: " + id);
+        }
+        usuarioRepository.deleteById(id);
     }
 }
