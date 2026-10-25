@@ -17,7 +17,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     // Maneja nuestra excepción 404 Not Found personalizada
-    @ExceptionHandler(RecursoNoEncontradoException.exceptionsClass) // o directamente la clase:
+    @ExceptionHandler(RecursoNoEncontradoException.class) // o directamente la clase:
     public ResponseEntity<ErrorResponseDTO> handleRecursoNoEncontrado(RecursoNoEncontradoException ex) {
         ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
