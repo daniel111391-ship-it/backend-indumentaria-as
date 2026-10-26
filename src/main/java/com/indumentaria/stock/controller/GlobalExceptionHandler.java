@@ -17,7 +17,7 @@ import java.util.Map;
 public class GlobalExceptionHandler {
 
     // Maneja nuestra excepción 404 Not Found personalizada
-    @ExceptionHandler(RecursoNoEncontradoException.class) // o directamente la clase:
+    @ExceptionHandler(RecursoNoEncontradoException.class)
     public ResponseEntity<ErrorResponseDTO> handleRecursoNoEncontrado(RecursoNoEncontradoException ex) {
         ErrorResponseDTO error = new ErrorResponseDTO(
                 LocalDateTime.now(),
@@ -38,5 +38,17 @@ public class GlobalExceptionHandler {
             errors.put(fieldName, errorMessage);
         });
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    // Maneja los errores de llave foránea (devuelve 409 Conflict)
+    @ExceptionHandler(org.springframework.dao.DataIntegrityViolationException.class)
+    public ResponseEntity<ErrorResponseDTO> handleDataIntegrityViolationException(org.springframework.dao.DataIntegrityViolationException ex) {
+        ErrorResponseDTO error = new ErrorResponseDTO(
+                LocalDateTime.now(),
+                HttpStatus.CONFLICT.value(),
+                "Conflicto de Integridad",
+                "No se puede eliminar el registro porque tiene otros datos asociados (ej. un proveedor con prendas en stock)."
+        );
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 }
